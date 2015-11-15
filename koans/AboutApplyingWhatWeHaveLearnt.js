@@ -37,10 +37,11 @@ describe("About Applying What We Have Learnt", function() {
       var productsICanEat = [];
 
       /* solve using filter() & all() / any() */
-      productsICanEat = _(products).filter(function(product) {return !product.containsNuts;})
-                                    .filter(function(product) {
-                                      return _(product.ingredients).all(function(ingredient) {return ingredient != "mushrooms";})
-                                      });
+      productsICanEat = _(products).filter(function(product) {
+                          return !product.containsNuts && _(products).all(function(ingrd) {return ingred != "mushrooms";});
+            //only return if  "it doesn't contain nuts" AND "all ingredients of each product aren't equal to mushrooms"
+                        })
+                                    
 
       expect(productsICanEat.length).toBe(1);
   });
@@ -60,9 +61,11 @@ describe("About Applying What We Have Learnt", function() {
   });
 
   it("should add all the natural numbers below 1000 that are multiples of 3 or 5 (functional)", function () {
+    /* try chaining range() and reduce() */
     var sum = _.range(0,1000).reduce( function(sum,a) {
                                       return (a % 3 == 0 || a % 5 == 0) ? sum + a: sum;
-                                      },0);    /* try chaining range() and reduce() */
+                                      },0); /*create an array with all numbers below 1000 then reduce the array to
+                                            a sum that only includes numbers divisble by 3 or 5.
 
     expect(233168).toBe(sum);
   });
@@ -84,9 +87,19 @@ describe("About Applying What We Have Learnt", function() {
     var ingredientCount = { "{ingredient name}": 0 };
 
     /* chain() together map(), flatten() and reduce() */
+    ingredientCount = _(products).chain() //chain higher order functions
+                          .map(function(product) {return product.ingredients;}) //map so that all ingredient arrays are withdrawn
+                          .flatten() //flatten all ingredients array to 1 array
+                          .reduce(function(finalObj, ingredient) {
+                            finalObj[ingredient] = (finalObj[ingredient] || 0) + 1; 
+                            return finalObj;
+                          }, ingredientCount); /* reduce array so that for each value in the array, the corresponding property
+                                                  is either set to zero or incremented. Be sure to return the new object for the
+                                                  next element in the ingredients array to modify */
+                          .value()
     
 
-    expect(ingredientCount['mushrooms']).toBe(FILL_ME_IN);
+    expect(ingredientCount['mushrooms']).toBe(2);
   });
 
   /*********************************************************************************/
